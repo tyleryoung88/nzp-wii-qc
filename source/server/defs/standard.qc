@@ -180,7 +180,7 @@ string  (string s)                                                              
 string  (string s)                                                                              precache_model      = #20;
 void    (entity client, string s)                                                               stuffcmd            = #21;
 entity  (vector org, float rad)                                                                 findradius          = #22;
-//void	(float level, string s)																	bprint				= #23;
+void	(float level, string s)																	bprint				= #23;
 //void	(entity client, float level, string s)													sprint				= #24;
 void    (string s)                                                                              dprint              = #25;
 string  (float f)                                                                               ftos                = #26;
@@ -469,6 +469,12 @@ void    (entity who, float color, float duration, float type)                   
 #define	MSG_ALL			 2		// reliable to all
 #define	MSG_INIT		 3	// write to the init string
 
+// message levels
+#define     PRINT_LOW					0				// pickup messages
+#define     PRINT_MEDIUM				1				// death messages
+#define     PRINT_HIGH					2				// critical messages
+#define     PRINT_CHAT					3				// also goes to chat console
+
 #define	AS_STRAIGHT		 1
 #define	AS_SLIDING		 2
 #define	AS_MELEE		 3
@@ -484,7 +490,7 @@ string string_null;    // null string, nothing should be held here
 .vector pos1, pos2, mangle;
 
 void(vector o, vector d, float color, float count) particle = #48;// start a particle effect
-void(string s) bprint				= #23;
+//void(string s) bprint				= #23;
 void(entity client, string s) sprint		= #24;
 void() SUB_Remove = {remove(self);};
 

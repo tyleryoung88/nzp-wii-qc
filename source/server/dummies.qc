@@ -116,7 +116,6 @@ void MBOX_FreeEnt(entity ent) = {return;};
 entity MBOX_GetFreeEnt() = {return;};
 void MBOX_Touch() = {return;};
 void Spawn_Powerup(vector where, float type) = {return;};
-void Spawns_Init() = {return;};
 void Barrel_Hit() = {return;};
 float push_away_zombies() = {return 0;};
 float Zombie_HeadCanGib(entity who, float weapon) = {return 0;};

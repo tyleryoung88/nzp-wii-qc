@@ -1,5 +1,7 @@
 ../progs.dat
 
+#pragma warning disable Q208
+
 server/defs/standard.qc	
 shared/defs/custom.qc	        
 server/defs/custom.qc
@@ -7,18 +9,20 @@ shared/weapon_defines.qc
 server/utilities/math.qc
 server/clientfuncs.qc
 
-server/dummys.qc 
 server/dummies.qc 
 server/main.qc
 server/utilities/weapon_utilities.qc
 server/utilities/game_restart.qc 
 server/utilities/command_parser.qc 	                                   
 server/player.qc
-server/damage.qc		                                                      
+server/damage.qc
+		                                                      
 server/entities/sub_functions.qc
 server/entities/triggers.qc
+server/entities/spawn_points.qc
 server/entities/func.qc	
 server/entities/lights.qc
+server/entities/wall_weapon.qc
 
 server/weapons/frames_core.qc
 server/weapons/rocket_launcher.qc
