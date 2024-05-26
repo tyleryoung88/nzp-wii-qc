@@ -275,6 +275,7 @@ void() Compat_ConvertBetaWallWeapons =
 //
 void() Compat_ConvertBetaBarricade =
 {
+	/*
     makevectors(self.angles);
     self.origin += v_up*48;
     self.origin -= v_forward*2;
@@ -287,9 +288,10 @@ void() Compat_ConvertBetaBarricade =
     self.hop_spot_x -= 5;
 	self.hop_spot_z -= 20;
     self.scale = 0.75;
+	*/
 };
 
-void() item_cover = {map_compatibility_mode = MAP_COMPAT_BETA; item_barricade(); Compat_ConvertBetaBarricade();};
+void() item_cover = {/*map_compatibility_mode = MAP_COMPAT_BETA; item_barricade(); Compat_ConvertBetaBarricade();*/};
 
 //
 // NZ:P Beta Mystery Box
@@ -302,6 +304,7 @@ void() item_cover = {map_compatibility_mode = MAP_COMPAT_BETA; item_barricade();
 //
 void() Compat_FixMysteryBox =
 {
+	/*
     entity mystery_box = find(world, classname, "mystery");
 
     while(mystery_box != world) {
@@ -323,6 +326,7 @@ void() Compat_FixMysteryBox =
 
         mystery_box_spots = find(mystery_box_spots, classname, "mystery_box_tp_spot");
     }
+	*/
 };
 
 //
@@ -337,6 +341,7 @@ void() Compat_FixMysteryBox =
 //
 void() Compat_FixPowerSwitch =
 {
+	/*
     entity power_switches = find(world, classname, "power_switch");
 
     while(power_switches != world) {
@@ -347,6 +352,7 @@ void() Compat_FixPowerSwitch =
 
         power_switches = find(power_switches, classname, "power_switch");
     }
+	*/
 };
 
 //
@@ -366,6 +372,7 @@ void() Compat_FixPowerSwitch =
 
 void(float mode) Compat_RelocateBetaPerkMachine =
 {
+	/*
     makevectors(self.angles);
 
     switch(mode) {
@@ -384,15 +391,16 @@ void(float mode) Compat_RelocateBetaPerkMachine =
     }
 
     self.scale = 0.85;
+	*/
 };
 
-void() item_revive = {map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_revive();};
-void() item_speed = {map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_SPEED); perk_speed();};
-void() item_flopper = {map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_flopper();};
-void() item_juggernog = {map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_juggernog();};
-void() item_douple = {map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_double(); self.spawnflags += PERK_SPAWNFLAG_DOUBLETAPV1;};
-void() item_staminup = {map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_staminup();};
-void() item_pap = {map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_PAP); perk_pap();};
+void() item_revive = {/*map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_revive();*/};
+void() item_speed = {/*map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_SPEED); perk_speed();*/};
+void() item_flopper = {/*map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_flopper();*/};
+void() item_juggernog = {/*map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_juggernog();*/};
+void() item_douple = {/*map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_double(); self.spawnflags += PERK_SPAWNFLAG_DOUBLETAPV1;*/};
+void() item_staminup = {/*map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_NORM); perk_staminup();*/};
+void() item_pap = {/*map_compatibility_mode = MAP_COMPAT_BETA; Compat_RelocateBetaPerkMachine(COMPAT_RELOCAT_PAP); perk_pap();*/};
 
 //
 // NZ:P Beta Triggers

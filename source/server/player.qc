@@ -250,7 +250,6 @@ float(float dir) checkMovement =
 //
 float(entity who) Player_CanStandHere =
 {
-	/*
 	// There shouldn't be any real reason we'd care about this since beta maps don't support
 	// stance changing impacting the bbox, but still, consistency..
 	if (map_compatibility_mode == MAP_COMPAT_BETA)
@@ -259,7 +258,6 @@ float(entity who) Player_CanStandHere =
 		tracebox(who.origin, PLAYER_MINS_STANDING, PLAYER_MAXS_STANDING, who.origin, true, who);
 
 	return !trace_startsolid;
-	*/
 }
 
 //
@@ -399,25 +397,186 @@ void() PlayerPostThink =
 
 void() ClientKill = 
 {
-
-	
 	
 };
 
 
 void() ClientConnect = 
 {
-
-	
-
+	if(cvar("developer") || player_count > 1) {
+		bprint(PRINT_HIGH, self.netname); //print player name
+		bprint(PRINT_HIGH, " connected.\n");
+	}
 };
 
-
-void() ClientDisconnect = 
+//
+// Player_PickSpawnPoint()
+// Picks a valid spawn point for the
+// newly spawning player, as well as
+// assigns any spawn-specific fields
+// (e.g., starting weapon).
+//
+void() Player_PickSpawnPoint =
 {
+	entity spawn_point = world;
+	float found_viable_spawn = false;
 
+	// Assign a location
+	while(!found_viable_spawn) {
+		float index = random();
+
+		// assign one of the spawnpoints
+		if (index < 0.25)
+			spawn_point = find(world, classname, SPAWN_1_CLASS);
+		else if (index < 0.50)
+			spawn_point = find(world, classname, SPAWN_2_CLASS);
+		else if (index < 0.75)
+			spawn_point = find(world, classname, SPAWN_3_CLASS);
+		else
+			spawn_point = find(world, classname, SPAWN_4_CLASS);
+
+		float found_player_here = false;
+
+		entity ents_in_spawn_range = findradius(spawn_point.origin, 32);
+
+		// check if there's a player in the way
+		while(ents_in_spawn_range != world) {
+			if (ents_in_spawn_range.classname == "player")
+				found_player_here = true;
+
+			ents_in_spawn_range = ents_in_spawn_range.chain;
+		}
+
+		// no player in the way, this spawn is good.
+		if (found_player_here == false)
+			found_viable_spawn = true;
+	}
+
+	// Give them their name
+	self.name = spawn_point.name;
+
+	// Set their location
+	self.origin = spawn_point.origin + '0 0 1';
+	self.angles = spawn_point.angles;
+
+	// Assign their starting weapon
+	Weapon_AssignWeapon(0, spawn_point.weapon, spawn_point.currentmag, spawn_point.currentammo);
+
+	// Activate anything the Spawn was targeting
+	entity tempe = self;
+	self = spawn_point;
+	SUB_UseTargets();
+	self = tempe;
+};
+
+void() PlayerSpawn =
+{	
+	entity spawnpoint = world;
+	local_client = self;
+
+	self.isspec = FALSE;
+	self.classname = "player";
+	self.solid = SOLID_BBOX;
+	self.flags = FL_CLIENT;
+
+	self.onfire = false;
+	self.fire_timeout = 0;
+
+	// We can only collide with zombies (and not their limbs)
+
+#ifdef FTE
+
+	self.dimension_hit = HITBOX_DIM_ZOMBIES;
+
+#endif // FTE
+
+	setmodel(self, "models/player.mdl");
+	self.movetype = MOVETYPE_WALK;
+	self.max_health = self.health = PLAYER_START_HEALTH;
+
+	entity who = find(world,classname,"player");
+	while(who != self && !self.playernum)
+	{
+		if(who)
+		{
+			player_count++;
+			break;
+		}
+	}
+
+	if (!self.playernum) {
+		self.playernum = player_count + 1;
+		if (self.playernum == 1)
+			pl1 = self;
+	}
+
+	// Assign them a spawn location.
+	Player_PickSpawnPoint();
 	
+	self.fixangle = true;
 
+	// NZ:P Beta used Quake BSP 29, so set bounding box accordingly.
+	if (map_compatibility_mode == MAP_COMPAT_BETA) {
+		self.view_ofs = VIEW_OFS_QK;
+		setsize(self, PLAYER_MINS_QUAKE, PLAYER_MAXS_QUAKE);
+	} else {
+		self.view_ofs = VIEW_OFS_HL;
+		setsize(self, PLAYER_MINS_STANDING, PLAYER_MAXS_STANDING);
+	}
+
+	self.stance = 2;
+	self.new_ofs_z = self.view_ofs_z;
+	self.oldz = self.origin_z;
+	self.grenades = self.grenades | 1;  // add frag grenades to player inventory
+	
+	if (rounds)
+		self.primary_grenades = 2;
+	else
+		self.primary_grenades = 0; 		// start off without grenades
+		
+	self.pri_grenade_state = 0; 		// defines that frag grenades are for player first, not betty
+	self.secondary_grenades = -1;		// shows that we both don't have betties AND shouldn't draw the image onscreen
+
+	if (!self.points)
+		addmoney(self, G_STARTPOINTS, 0);
+
+	self.weaponmodel = GetWeaponModel(self.weapon, 0);// Give weapon model
+	self.weapon2model = GetWeapon2Model(self.weapon);
+
+	self.stamina = 3;
+	self.reviving = 0;
+	self.perks = G_PERKS;
+
+	UpdatePlayerCount(player_count);
+	
+#ifdef FTE
+
+	self.viewzoom = 1;
+	self.SendEntity = Player_SendEntity;
+	self.weapon_animduration = getWeaponDelay(self.weapon, FIRE);
+
+	if (G_WORLDTEXT)
+		WorldText(world.chaptertitle, world.location, world.date, world.person, self);
+
+	ReportMapMode(map_compatibility_mode, self);
+
+#else 
+
+	self.Weapon_Name = GetWeaponName(self.weapon);
+	self.Flash_Offset = GetWeaponFlash_Offset(self.weapon);
+	self.Flash_Size = GetWeaponFlash_Size(self.weapon);
+	self.ADS_Offset = GetWeaponADSOfs(self.weapon);
+
+#endif // FTE
+
+	if (G_STARTROUND != 1) {
+		rounds = G_STARTROUND - 1;
+	}
+
+	// Make sure players joining after game start are still allowed
+	// to see their name.
+	if (time >= 5 && self.name != "")
+		nzp_setplayername(self, self.name);
 };
 
 void() SpectatorSpawn =
@@ -437,34 +596,62 @@ void() SpectatorSpawn =
 	self.view_ofs = '0 0 22';
 	self.aiment = world;
 };
-
 //called when a client loads a map
 float spawns_initialized;
 void() PutClientInServer = 
 {
+	// Init Spawn Points
+	if (!spawns_initialized) {
+		Spawns_Init();
+		spawns_initialized = true;
+	}
+	
+	if(cvar("developer") || player_count > 1) {
+		bprint(PRINT_HIGH, self.netname);
+		bprint(PRINT_HIGH, " has joined the game.\n");
+	}
+	
+	if (spawn_time > time || !rounds)
+		PlayerSpawn();
 
-	local entity spawn_spot;
-	spawn_spot = find(world, classname, "info_player_start");
-	
-	self.classname = "player";
-	self.health = self.max_health = 100;
-	self.takedamage = DAMAGE_AIM;
-	self.solid = SOLID_SLIDEBOX;
-	self.movetype = MOVETYPE_WALK;
-	self.flags = FL_CLIENT;
-	
-	self.origin = spawn_spot.origin + '0 0 1';
-	self.angles = spawn_spot.angles;
-	self.fixangle = TRUE;
-	
-	//self.weapon = IT_PEPPERBOX;
-	//self.items = 64;
-	
-	setmodel (self, "progs/player.mdl");
-	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
-	
-	self.view_ofs = VIEW_OFS_HL;
-	self.velocity = '0 0 0';
+#ifdef FTE
 
+	else 
+		SpectatorSpawn();
+
+#endif // FTE
+
+	//GameRestart_ResetPerkaColas();
 };
+
+//called when client disconnects from the server
+void() ClientDisconnect =
+{
+	bprint(PRINT_HIGH, self.netname);
+	bprint(PRINT_HIGH, " has left the game.\n");
+	player_count--;
+	UpdatePlayerCount(player_count);
+	
+	self.classname = "disconnected";
+	self.solid = SOLID_NOT;
+	self.movetype = MOVETYPE_BOUNCE;
+	self.nextthink = -1;
+	setmodel(self, "models/sprites/null.spr");
+
+	//GameRestart_ResetPerkaColas();
+
+	if (self.downed) {
+		DisableReviveIcon(self.electro_targeted);
+		revive_index--;
+	}
+
+#ifdef FTE
+
+	// Network everything
+	self.SendFlags = 1;
+	self.is_in_menu = 0;
+
+#endif // FTE
+};
+
 

@@ -8,6 +8,7 @@ server/defs/custom.qc
 shared/weapon_defines.qc
 server/utilities/math.qc
 server/clientfuncs.qc
+server/hash_table.qc
 
 server/dummies.qc 
 server/main.qc
@@ -20,6 +21,7 @@ server/damage.qc
 server/entities/sub_functions.qc
 server/entities/triggers.qc
 server/entities/spawn_points.qc
+server/entities/map_entities.qc
 server/entities/func.qc	
 server/entities/lights.qc
 server/entities/wall_weapon.qc
@@ -35,6 +37,6 @@ server/weapons/weapon_core.qc
 
 server/ai/crawler_core.qc					
 								
-
+server/utilities/map_compatibility.qc
 
 

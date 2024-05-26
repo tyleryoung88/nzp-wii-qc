@@ -256,7 +256,7 @@ void Set_W_Frame (float startframe, float endframe, float duration, float funcca
 .void() animend;
 .void(optional float t) animend2;
 
-//string(string path) Compat_ConvertOldAssetPath;
+string(string path) Compat_ConvertOldAssetPath;
 
 //Null functions
 void() SUB_Null = {};

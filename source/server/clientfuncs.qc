@@ -586,7 +586,7 @@ void(entity ent) Ent_FakeRemove =
 
 void(string modelname) Precache_Set = // Precache model, and set myself to it
 {
-	//modelname = Compat_ConvertOldAssetPath(modelname);
+	modelname = Compat_ConvertOldAssetPath(modelname);
     precache_model(modelname);
     setmodel(self, modelname);
 };

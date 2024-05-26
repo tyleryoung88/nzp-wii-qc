@@ -49,7 +49,7 @@ void(entity person) W_HideCrosshair =
 	if (person == world)
 		return;
 
-	//stuffcmd(person, "crosshair 0\n");
+	stuffcmd(person, "crosshair 0\n");
 }
 
 //
@@ -74,9 +74,9 @@ void(entity person) W_ShowCrosshair =
 	 	crosshair_type = WepDef_GetWeaponCrosshairType(person.weapon);
 
 	string crosshair_string = "crosshair ";
-	//crosshair_string = strzone(strcat(crosshair_string, ftos(crosshair_type)));
-	//stuffcmd(person, strcat(crosshair_string, "\n"));
-	//strunzone(crosshair_string);
+	crosshair_string = strzone(strcat(crosshair_string, ftos(crosshair_type)));
+	stuffcmd(person, strcat(crosshair_string, "\n"));
+	strunzone(crosshair_string);
 }
 
 void() ReturnWeaponModel =
@@ -830,7 +830,7 @@ void(float damage, vector dir, vector org, vector plane, entity hit_ent, float s
 #ifndef FTE
 
 		msg_entity = self;
-		//WriteByte(MSG_ONE, SVC_HITMARK);
+		WriteByte(MSG_ONE, SVC_HITMARK);
 		
 #endif // FTE
 
