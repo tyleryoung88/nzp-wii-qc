@@ -68,7 +68,7 @@ void() func_wall = { func_detail(); }
 // =================================
 // func_rotating
 // =================================
-/*
+
 .vector spawnorigin;
 
 void () hl_rotating =
@@ -144,11 +144,11 @@ void () func_rotating =
 	if (self.spawnorigin != '0 0 0')
 		setorigin(self, self.spawnorigin);
 };
-*/
+
 // =================================
 // func_train
 // =================================
-/*
+
 void() train_next;
 void() func_train_find;
 
@@ -271,7 +271,7 @@ void() func_train =
 	self.nextthink = self.ltime + 0.1;
 	self.think = func_train_find;
 };
-*/
+
 // =================================
 // func_button
 // =================================

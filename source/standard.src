@@ -11,6 +11,7 @@ server/clientfuncs.qc
 server/hash_table.qc
 
 server/dummies.qc 
+server/rounds.qc
 server/main.qc
 server/utilities/weapon_utilities.qc
 server/utilities/game_restart.qc 
@@ -19,11 +20,19 @@ server/player.qc
 server/damage.qc
 		                                                      
 server/entities/sub_functions.qc
+server/entities/sounds.qc
 server/entities/triggers.qc
 server/entities/spawn_points.qc
+server/entities/explosive_barrel.qc
+server/entities/teleporter.qc
 server/entities/map_entities.qc
 server/entities/func.qc	
+server/entities/traps.qc
 server/entities/lights.qc
+server/entities/pack_a_punch.qc
+server/entities/doors.qc
+server/entities/window.qc
+server/entities/machines.qc
 server/entities/wall_weapon.qc
 
 server/weapons/frames_core.qc
@@ -35,7 +44,7 @@ server/weapons/grenade_launcher.qc
 server/weapons/bouncing_betty.qc
 server/weapons/weapon_core.qc
 
-server/ai/crawler_core.qc					
+server/entities/powerups.qc				
 								
 server/utilities/map_compatibility.qc
 

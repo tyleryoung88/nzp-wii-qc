@@ -1,47 +1,168 @@
 /*
-+----+
-|Main|
-+----+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+
-| Scratch                                      Http://www.admdev.com/scratch |
-+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+
-| Contains some 'base' subroutines. As a general rule nothing in this file   |
-| does much, except to setup basic variables and entities.                   |
-+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+
+	server/main.qc
+
+	mostly functions that will be called from the engine and are
+	expected to exist
+
+	Copyright (C) 2021-2024 NZ:P Team
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to:
+
+		Free Software Foundation, Inc.
+		59 Temple Place - Suite 330
+		Boston, MA  02111-1307, USA
+
 */
-void() LightStyles_setup;
 
-void() main = 
+void() LS_Setup;
+void() PU_Init;
+void() Compat_Init;
+void() SUB_Remove = {remove(self);}
+
+//called when starting server/loading the map
+void() main =
 {
-	
-	
-	
-};
+	cheats_have_been_activated = false;
+	global_trace_damage_multiplier = 1;
+}
 
+float ai_delay_time;
+float time_before_gamestart;
 
-void() SetNewParms = 
+//
+// Way_SetBrushEntNonSolid(ent_name)
+// FIXME: Move this elsewhere..
+// Wrapper for finding brush ents of classname
+// and making them non-solid. For use only
+// with Waypoint Mode.
+//
+void(string ent_name) Way_SetBrushEntNonSolid =
 {
-	
-	
-	
-};
+	entity ent = find(world, classname, ent_name);
+	while(ent != world) {
+		ent.solid = SOLID_NOT;
+		ent.touch = SUB_Null;
+		ent = find(ent, classname, ent_name);
+	}
+}
 
-
-void() SetChangeParms = 
+//called for each frame that QC runs
+float zombie_cleaned_w;
+void() StartFrame =
 {
-	
-	
-	
-};
+	//framecount = framecount + 1;
+/*
+	if (waypoint_mode) {
+		if (!zombie_cleaned_w) {
+			entity zent;
+			zent = find (world, classname, "ai_zombie");
+			while (zent)
+			{
+				remove (zent);
+				zent = find (zent, classname, "ai_zombie");
+			}
+			zombie_cleaned_w = true;
+
+			zent = find (world, classname, "waypoint");
+			while (zent)
+			{
+				if (zent.targetname)
+					setmodel(zent, "models/way/normal_way_door.spr");
+				else
+					setmodel(zent, "models/way/normal_way.spr");
+				zent = find (zent, classname, "waypoint");
+			}
+			Way_SetBrushEntNonSolid("door_nzp_cost");
+			Way_SetBrushEntNonSolid("door_nzp");
+			Way_SetBrushEntNonSolid("door");
+		}
+		return;
+	}
+*/
+	// Start completely blacked out
+	//if (time < 5)
+		
 
 
-void() StartFrame = 
-{
-	
-	
-	
-};
+	if (roundinit) {
+		Round_Core();
 
+		if (ai_delay_time < time) {
+			//Do_Zombie_AI ();
+
+			// This determines the delay between each AI's update sequence.
+			// It needs to be variable -- the more AI, the smaller this number
+			// should end up being, or else you'll have AI completely stall
+			// waiting for it's chance in the spotlight.
+			// -----
+
+#ifdef FTE
+
+			// On FTE, resources are available to make this super short (0.01s,
+			// meaning all 24 ai update 4 times a second).
+			ai_delay_time = time + 0.01;
+
+#else
+
+			// On other platforms, have this be 0.03 / ai factor / 12.
+			// This means that:
+			// AI Updates at ~30Hz with 12 Zombies
+			// AI Updates at ~45Hz with 18 Zombies
+			// AI Updates at ~60Hz with 24 Zombies
+			ai_delay_time = time + (0.03 / (nzp_maxai()/12));
+
+#endif // FTE
+
+		}
+	} else {
+		if (!time_before_gamestart) {
+			entity SpawnedIn;
+			SpawnedIn = find(world, classname, "player");
+
+			if (SpawnedIn) {
+				entity hellhound = find(world, classname, "spawn_dog");
+
+				if (hellhound != world)
+					gotdog = true;
+
+				Compat_Init();
+				updateDogRound();
+				time_before_gamestart = time + 3;
+			}
+			return;
+		} else if (time_before_gamestart < time) {
+			InitRounds();
+			nzp_screenflash(world, SCREENFLASH_COLOR_BLACK, 1, SCREENFLASH_FADE_OUT);
+			sound(self, CHAN_AUTO, "sounds/rounds/splash.wav", 1, ATTN_NONE);
+
+			entity players = find(world, classname, "player");
+			
+			while(players != world) {
+				if (players.name != "")
+					nzp_setplayername(players, players.name);
+
+				players = find(players, classname, "player");
+			}
+
+		} else {
+			nzp_screenflash(world, SCREENFLASH_COLOR_BLACK, 90, SCREENFLASH_FADE_OUT);
+		}
+	}
+}
 string(string s) precache_model         = #20;
+
 void() precaches =
 {
 	precache_model ("models/player.mdl");
@@ -55,7 +176,7 @@ void() precaches =
 	precache_model ("models/sprites/explosion.spr");
 	precache_model ("models/sprites/null.spr");
 	precache_model ("models/sprites/lightning.spr");
-/*
+
 	if (cvar("waypoint_mode")) {
 		precache_model ("models/way/current_way.spr");
 		precache_model ("models/way/current_way_door.spr");
@@ -66,16 +187,14 @@ void() precaches =
 		precache_model ("models/way/way_jump.spr");
 		precache_model ("models/way/way_land.spr");
 	}
-*/
-/*
+
 	// zombie
 	precache_model ("models/ai/zfull.mdl");
 	precache_model ("models/ai/zal(.mdl");
 	precache_model ("models/ai/zar(.mdl");
 	precache_model ("models/ai/zb%.mdl");
 	precache_model ("models/ai/zh^.mdl");
-*/
-/*
+
 	// For debugging zombie AI
 	if (cvar("developer")) {
 		precache_model ("models/way/normal_way.spr");
@@ -87,7 +206,7 @@ void() precaches =
 	precache_model ("models/ai/zalc(.mdl");
 	precache_model ("models/ai/zarc(.mdl");
 	precache_model ("models/ai/zhc^.mdl");
-*/
+
 	// start weapons
 	precache_model ("models/weapons/m1911/v_colt.mdl");
 	precache_model ("models/weapons/m1911/g_colt.mdl");
@@ -224,31 +343,225 @@ void() precaches =
 	precache_sound("sounds/null.wav");
 }
 
-void() worldspawn = 
+//called when map loaded
+void() worldspawn =
 {
-	
 	precaches();
-	LightStyles_setup();
-	
+
+	// Define all of our Light Styles
+	LS_Setup();
+
+	// Init Power-Ups
+	PU_Init();
+
+#ifdef FTE
+
+	clientstat(STAT_CURRENTMAG, EV_FLOAT, weapons[0].weapon_magazine);
+	clientstat(STAT_CURRENTMAG2, EV_FLOAT, weapons[0].weapon_magazine_left);
+	clientstat(STAT_POINTS, EV_FLOAT, points);
+	clientstat(STAT_WEAPON2FRAME, EV_FLOAT, weapon2frame);
+	clientstat(STAT_WEAPON2MODELI, EV_FLOAT, weapon2modelindex);
+	clientstat(STAT_WEAPONSKIN, EV_FLOAT, weaponskin);
+	clientstat(STAT_GRENADES, EV_FLOAT, primary_grenades);
+	clientstat(STAT_SECGRENADES, EV_FLOAT, secondary_grenades);
+	clientstat(STAT_PROGRESSBAR, EV_FLOAT, progress_bar_percent);
+	clientstat(STAT_WEAPONDURATION, EV_FLOAT, weapon_animduration);
+	clientstat(STAT_WEAPON2DURATION, EV_FLOAT, weapon2_animduration);
+	clientstat(STAT_WEAPONZOOM, EV_FLOAT, zoom);
+	clientstat(STAT_INSTA, EV_FLOAT, insta_icon);
+	clientstat(STAT_X2, EV_FLOAT, x2_icon);
+	clientstat(STAT_SPECTATING, EV_FLOAT, isspec);
+	clientstat(STAT_PLAYERNUM, EV_FLOAT, playernum);		// literally useless but will be kept in case
+	clientstat(STAT_PLAYERSTANCE, EV_FLOAT, stance);
+	clientstat(STAT_FACINGENEMY, EV_FLOAT, facingenemy);
+	clientstat(STAT_VIEWZOOM, EV_FLOAT, viewzoom);
+	clientstat(STAT_MAXHEALTH, EV_FLOAT, max_health);
+	clientstat(STAT_PERKS, EV_FLOAT, perks);
+
+#endif // FTE
+
+	mappath = strcat("maps/", mapname);
+	mappath = strzone(mappath);
+
+	//LoadWaypointData();
+
 	//set game elements
-	//G_STARTPOINTS = 500;
-	//G_STARTROUND = 1;
-	//G_PRONEPOINTS = 0;
+	G_STARTPOINTS = 500;
+	G_STARTROUND = 1;
+	G_PRONEPOINTS = 0;
 	G_STARTWEAPON[0] = W_COLT;
 	G_STARTWEAPON[1] = 8;
 	G_STARTWEAPON[2] = 32;
-	//G_WORLDTEXT = 1;
-	//G_PERKS = 0;
-	//G_PERKPOWER = 0;
-};
+	G_WORLDTEXT = 1;
+	G_PERKS = 0;
+	G_PERKPOWER = 0;
+}
+
+void() SpectatorConnect =
+{
+	//bprint(PRINT_HIGH, self.netname);
+	//bprint(PRINT_HIGH, " has joined the spectators.\n");
+}
+
+void() RelinkZombies =
+{
+	entity ent,ent2;
+	local float i;
+	local vector min, max;
+
+
+	//warn
+	ent = ent2 = world;
+
+	while ((ent = find (ent, classname, "ai_zombie")))
+	{
+		if(ent.currentHitBoxSetup == 0)//empty bbox, we don't care to update
+			continue;
+
+#ifdef FTE
+		// This is just a weird hack we do to avoid spamming other clients in co-op with
+		// the update positions for limbs. Brings bandwidth from 90kbps->30kbps without
+		// a tick rate limit. 30kbps->12kbps with a tickrate of 20Hz. Basically, like we
+		// do other platforms for render speedups, if a zombie has all of its limbs dont
+		// bother drawing them all separately. draw one full mesh instead, then when it
+		// has been gibbed, then begin drawing separately -- cypress
+		if (ent.larm.deadflag && ent.rarm.deadflag && ent.head.deadflag) {
+			setmodel(ent.larm, "");
+			setmodel(ent.rarm, "");
+			setmodel(ent.head, "");
+
+			if (ent.crawling == 1)
+				setmodel(ent, "models/ai/zcfull.mdl");
+			else
+				setmodel(ent, "models/ai/zfull.mdl");
+		} else if (!(ent.crawling == 1 && ent.model == "models/ai/zbc%.mdl") || !(ent.model == "models/ai/zb%.mdl")) {
+			if (ent.crawling == 1)
+				setmodel(ent, "models/ai/zbc%.mdl");
+			else
+				setmodel(ent, "models/ai/zb%.mdl");
+
+			if (ent.larm.deadflag) {
+				if (ent.crawling == 1)
+					setmodel(ent.larm, "models/ai/zalc(.mdl");
+				else
+					setmodel(ent.larm, "models/ai/zal(.mdl");
+			}
+
+			if (ent.rarm.deadflag) {
+				if (ent.crawling == 1)
+					setmodel(ent.rarm, "models/ai/zarc(.mdl");
+				else
+					setmodel(ent.rarm, "models/ai/zar(.mdl");
+			}
+
+			if (ent.head.deadflag) {
+				if (ent.crawling == 1)
+					setmodel(ent.head, "models/ai/zhc^.mdl");
+				else
+					setmodel(ent.head, "models/ai/zh^.mdl");
+			}
+		}
+#endif // FTE
+
+		makevectors (ent.angles);
+
+		for(i = 0; i < 3; i++)
+		{
+			if(i == 0)
+				ent2 = ent.head;
+			if(i == 1)
+				ent2 = ent.larm;
+			if(i == 2)
+				ent2 = ent.rarm;
+
+
+			if (ent2)
+			{
+				//setorigin (ent.head, ent.origin + v_right * ent.head.view_ofs_x + v_forward * ent.head.view_ofs_y + v_up * ent.head.view_ofs_z);
+				setorigin (ent2, ent.origin);
+				//fixme, move angles set and frame set to below the continue, we only want to update origin (maybe angles too?)
+				ent2.angles = ent.angles;
+
+				if(ent2.deadflag)
+					ent2.frame = ent.frame;
+
+				//if(OnlyOrigin)
+				//	continue;
+				
+				
+				min = ent2.bbmins + (v_right * ent2.view_ofs_x) + (v_forward * ent2.view_ofs_y) + (v_up * ent2.view_ofs_z);
+				max = ent2.bbmaxs + (v_right * ent2.view_ofs_x) + (v_forward * ent2.view_ofs_y) + (v_up * ent2.view_ofs_z);
+
+				if(min_x > max_x) { min_x += max_x; max_x = min_x - max_x; min_x -= max_x; }
+				if(min_y > max_y) { min_y += max_y; max_y = min_y - max_y; min_y -= max_y; }
+				if(min_z > max_z) { min_z += max_z; max_z = min_z - max_z; min_z -= max_z; }
+
+				setsize(ent2,min,max);
+				
+			}
+
+		}
+	}
+}
+
+void() LinkZombiesHitbox =
+{
+	entity ent,ent2;
+	local float i;
+	local vector min, max;
+
+
+	//warn
+	ent = ent2 = world;
+
+	while ((ent = find (ent, classname, "ai_zombie")))
+	{
+		if(ent.currentHitBoxSetup == 0)//empty bbox, we don't care to update
+			continue;
+
+		makevectors (ent.angles);
+
+		for(i = 0; i < 3; i++)
+		{
+			if(i == 0)
+				ent2 = ent.head;
+			if(i == 1)
+				ent2 = ent.larm;
+			if(i == 2)
+				ent2 = ent.rarm;
+
+
+			if (ent2)
+			{
+				ent2.angles = ent.angles;
+
+				if(ent2.deadflag)
+					ent2.frame = ent.frame;
+
+				//if(OnlyOrigin)
+				//	continue;
+				
+				
+				min = ent2.bbmins + (v_right * ent2.view_ofs_x) + (v_forward * ent2.view_ofs_y) + (v_up * ent2.view_ofs_z);
+				max = ent2.bbmaxs + (v_right * ent2.view_ofs_x) + (v_forward * ent2.view_ofs_y) + (v_up * ent2.view_ofs_z);
+
+				if(min_x > max_x) { min_x += max_x; max_x = min_x - max_x; min_x -= max_x; }
+				if(min_y > max_y) { min_y += max_y; max_y = min_y - max_y; min_y -= max_y; }
+				if(min_z > max_z) { min_z += max_z; max_z = min_z - max_z; min_z -= max_z; }
+
+				setsize(ent2,min,max);
+				
+			}
+
+		}
+	}
+}
 
 void() EndFrame =
 {
 	//RelinkZombies();
-/*
+
 	if (cheats_have_been_activated == false && cvar("sv_cheats") == 1) {
 		cheats_have_been_activated = true;
 	}
-*/
 };
-

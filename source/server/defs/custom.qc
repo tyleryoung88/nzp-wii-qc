@@ -282,8 +282,8 @@ vector	trace_plane_normal;
 //
 
 
-//void Do_Zombie_AI();
-//void Z_ElectroShock();
+void Do_Zombie_AI();
+void Z_ElectroShock();
 
 .float electro_targeted; 							// Marks Zombie as waiting to die via Electro-Shock
 .float death_timer; 								// A timer that will kill a Zombie when it expires.
@@ -404,8 +404,8 @@ float sounds_playing;
 void(entity who) makeCrawler;
 .float state;//used to delay making a crawler, ex) when zombie is rising from ground or climbing over barrier, turn zombie into a crawler afterwards
 
-//void() spawnAllZombEnts;
-//void() set_z_health;
+void() spawnAllZombEnts;
+void() set_z_health;
 float() spawn_a_zombieA;
 float gotdog;
 float dogRound;

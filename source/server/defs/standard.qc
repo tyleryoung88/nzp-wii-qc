@@ -181,7 +181,7 @@ string  (string s)                                                              
 void    (entity client, string s)                                                               stuffcmd            = #21;
 entity  (vector org, float rad)                                                                 findradius          = #22;
 void	(float level, string s)																	bprint				= #23;
-//void	(entity client, float level, string s)													sprint				= #24;
+void	(entity client, float level, string s)													sprint				= #24;
 void    (string s)                                                                              dprint              = #25;
 string  (float f)                                                                               ftos                = #26;
 string  (vector v)                                                                              vtos                = #27;
@@ -489,10 +489,15 @@ string string_null;    // null string, nothing should be held here
 .string killtarget;
 .vector pos1, pos2, mangle;
 
-void(vector o, vector d, float color, float count) particle = #48;// start a particle effect
+//void(vector o, vector d, float color, float count) particle = #48;// start a particle effect
 //void(string s) bprint				= #23;
-void(entity client, string s) sprint		= #24;
-void() SUB_Remove = {remove(self);};
+//void(entity client, string s) sprint		= #24;
+//void() SUB_Remove = {remove(self);};
 
 float(entity targ, entity inflictor) CanDamage;
+
+// file operations
+#define		FILE_READ 	 				0
+#define		FILE_APPEND 				1
+#define		FILE_WRITE 					2
 

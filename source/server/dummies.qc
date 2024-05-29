@@ -107,21 +107,18 @@ void() trigger_teleport_area = {remove(self);};
 
 //Temp defs for merge
 float spawn_a_zombieA() = {return 0;};
-void InitRounds() = {return;};
-void func_door_nzp() = {return;};
-void Light_None(entity e) = {return;};
-void setup_perk() = {return;};
-void touch_perk() = {return;};
 void MBOX_FreeEnt(entity ent) = {return;};
 entity MBOX_GetFreeEnt() = {return;};
 void MBOX_Touch() = {return;};
-void Spawn_Powerup(vector where, float type) = {return;};
-void Barrel_Hit() = {return;};
 float push_away_zombies() = {return 0;};
 float Zombie_HeadCanGib(entity who, float weapon) = {return 0;};
 void zombie_crawl1() = {return;};
 void zombie_fastcrawl1() = {return;};
 void crawlerify1() = {return;};
 void Zombie_ReassignSpawnIDs() = {return;};
-
-
+void() Do_Zombie_AI = {return;};
+void() Z_ElectroShock = {return;};
+void(entity who) makeCrawler = {return;};
+void() spawnAllZombEnts = {return;};
+void() set_z_health = {return;};
+float() spawn_a_dogA = {return 0;};

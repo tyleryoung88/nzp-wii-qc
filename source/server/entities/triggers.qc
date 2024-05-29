@@ -413,8 +413,8 @@ void() hurt_touch =
 		self.think = hurt_on;
 		self.nextthink = time + 1;
 
-		//if (self.message)
-			//centerprint(other, strcat(self.message, "\n"));
+		if (self.message)
+			centerprint(other, strcat(self.message, "\n"));
 	}
 
 	return;

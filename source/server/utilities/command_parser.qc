@@ -37,6 +37,177 @@ float client_parse_override;
 #define COMMAND_FAILURE     1
 
 //
+// Command_give(params)
+// Usage: give <weapon_number>
+//
+float(string params) Command_give =
+{
+	// Anti-Cheat in Co-Op.
+	if (player_count && cheats_have_been_activated == false) {
+		bprint(PRINT_HIGH, "Someone tried to issue Give in a Co-Op match. Nice try!\n");
+		return COMMAND_FAILURE;
+	}
+
+	float wep = stof(argv(1));
+
+	if (wep) {
+		Weapon_GiveWeapon(wep, 0, 0);
+
+        return COMMAND_SUCCESS;
+    }
+
+    return COMMAND_FAILURE;
+}
+
+//
+// Command_addmoney(params)
+// Usage: addmoney <point_value>
+// Gives <point_value> amount of points to the client
+// who requested it.
+//
+float(string params) Command_addmoney =
+{
+	// Anti-Cheat in Co-Op.
+	if (player_count && cheats_have_been_activated == false) {
+		bprint(PRINT_HIGH, "Someone tried to issue Add Money in a Co-Op match. Nice try!\n");
+		return COMMAND_FAILURE;
+	}
+
+    // Grab parameters.
+    tokenize(params);
+    float point_value = stof(argv(0));
+
+    // Safety checks
+    if (point_value == 0) {
+        sprint(self, 1, "Command_addmoney: <point_value> is either zero or blank string. Failing.\n");
+        return COMMAND_FAILURE;
+    }
+
+    // Assign points to the player.
+    addmoney(self, point_value, 0);
+
+    return COMMAND_SUCCESS;
+}
+
+//
+// Command_softrestart()
+// Executes the Soft_Restart QuakeC function.
+// Useful for debugging its functionality.
+//
+float(string params) Command_softrestart =
+{
+	Soft_Restart();
+
+	return COMMAND_SUCCESS;
+}
+
+//
+// Command_godmode()
+// Toggles God Mode.
+//
+float(string params) Command_godmode =
+{
+	// Anti-Cheat in Co-Op.
+	if (player_count && cheats_have_been_activated == false) {
+		bprint(PRINT_HIGH, "Someone tried to issue God Mode in a Co-Op match. Nice try!\n");
+		return COMMAND_FAILURE;
+	}
+
+	client_parse_override = false;
+	return COMMAND_SUCCESS;
+} 
+
+//
+// Command_noclip()
+// Toggles No Clip.
+//
+float(string params) Command_noclip =
+{
+	// Anti-Cheat in Co-Op.
+	if (player_count && cheats_have_been_activated == false) {
+		bprint(PRINT_HIGH, "Someone tried to issue No-Clip in a Co-Op match. Nice try!\n");
+		return COMMAND_FAILURE;
+	}
+
+	if (self.model == "") {
+		setmodel(self, "models/player.mdl");
+		setsize(self, VEC_HULL_MIN, VEC_HULL_MAX);
+	} else {
+		setmodel(self, "");
+	}
+
+	client_parse_override = false;
+	return COMMAND_SUCCESS;
+} 
+
+//
+// Command_powerup()
+// Spawns a Power-Up of a given ID in front of you.
+//
+float(string params) Command_powerup =
+{
+	// Anti-Cheat in Co-Op.
+	if (player_count && cheats_have_been_activated == false) {
+		bprint(PRINT_HIGH, "Someone tried to issue spawn_pu in a Co-Op match. Nice try!\n");
+		return COMMAND_FAILURE;
+	}
+
+	// Grab parameters.
+    tokenize(params);
+	float value = stof(argv(0));
+
+	makevectors(self.angles);
+	Spawn_Powerup(self.origin + v_forward * 50, value);
+
+	return COMMAND_SUCCESS;
+};
+
+//
+// Command_tracedmgmultiplier()
+// Multiplies damage output with weapons that fire Traces.
+//
+float(string params) Command_tracedmgmultiplier =
+{
+	// Anti-Cheat in Co-Op.
+	if (player_count && cheats_have_been_activated == false) {
+		bprint(PRINT_HIGH, "Someone tried to issue sv_tracedmgmultiplier in a Co-Op match. Nice try!\n");
+		return COMMAND_FAILURE;
+	}
+
+	// Grab parameters.
+    tokenize(params);
+	float value = stof(argv(0));
+
+	if (value <= 0) {
+		bprint(PRINT_HIGH, "Command_tracedmgmultiplier: 0 or less than 0 multiplier not allowed. Failing.\n");
+		return COMMAND_FAILURE;
+	}
+
+	global_trace_damage_multiplier = value;
+	return COMMAND_SUCCESS;
+}
+
+//
+// Command_say()
+// Sends message via CSQC to other clients (FTE-only)
+//
+float(string params) Command_say =
+{	
+	// Grab parameters.
+    tokenize(params);
+	string value = argv(0);
+
+#ifdef FTE
+
+	CSQC_SendChatMessage(self.playernum, params);
+
+#endif // FTE
+
+	client_parse_override = false;
+	return COMMAND_SUCCESS;
+}
+
+//
 // Server command table
 // command_name         : Command string entered into developer console.
 // command_function     : QuakeC function called when command is executed.
@@ -45,7 +216,6 @@ float client_parse_override;
 //                        with the command.
 // command_description  : Called when no params (when applicable) are given.
 //
-/*
 var struct {
     string                  command_name;
     float(string params)    command_function;
@@ -61,14 +231,13 @@ var struct {
 	{"spawn_pu", Command_powerup, true, "Usage: spawn_pu <powerup>\n  Spawns a Power-Up of a given ID in front of you. -1 for random.\n"},
 	{"say", Command_say, true, "Usage: say <message>\n  Sends a chat message to CSQC for other clients.\n"}
 };
-*/
+
 //
 // SV_IsCommand(command_string)
 // Takes a single string and references if it is a
 // registered command, returns true if it is. Useful
 // for cl_chatmode interferring with custom commands.
 //
-/*
 float(string command_string) SV_IsCommand =
 {
 	for (float i = 0; i < server_commands.length; i++) {
@@ -78,14 +247,14 @@ float(string command_string) SV_IsCommand =
 
 	return false;
 }
-*/
+
 //
 // SV_ParseClientCommand(command_string)
 // Server-Side client command parser to add special
 // gameplay commands that interact with QuakeC.
 //
 void(string command_string) SV_ParseClientCommand =
-{/*
+{
 	// If true, we will avoid sending the command info
 	// to the client.
 	client_parse_override = false;
@@ -131,11 +300,10 @@ void(string command_string) SV_ParseClientCommand =
 		clientcommand(self, command_string);
 
 #endif // FTE
-*/
 };
 
 #ifndef FTE
 
-void() ParseClientCommand = {/*SV_ParseClientCommand(CMD_STRING);*/}
+void() ParseClientCommand = {SV_ParseClientCommand(CMD_STRING);}
 
 #endif // FTE

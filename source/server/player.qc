@@ -1,11 +1,30 @@
 /*
-+------+
-|Client|
-+------+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+
-| Scratch                                      Http://www.admdev.com/scratch |
-+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+
-| Handle's "clients" (eg, Players) connecting, disconnecting, etc.           |
-+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-+
+	server/player.qc
+
+	Various stuff done for the player, including per-frame functions 
+	like PlayerPreThink and PlayerPostThink, also client specific 
+	stuff like PutClientInServer etc.
+
+	Copyright (C) 2021-2024 NZ:P Team
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to:
+
+		Free Software Foundation, Inc.
+		59 Temple Place - Suite 330
+		Boston, MA  02111-1307, USA
+
 */
 
 void(entity e) Light_None;
@@ -380,33 +399,355 @@ void(float override) JumpCheck =
 		self.flags = self.flags | FL_JUMPRELEASED;
 }
 
-void() PlayerPreThink = 
+
+void() PlayerPreThink =
 {
+	if (self.downed) {
+		self.maxspeed = 30;
+	} else {
 
-	
+		// Walk slower to account for NZ:P Beta Scaling.
+		if (map_compatibility_mode == MAP_COMPAT_BETA)
+			self.maxspeed = 150;
+		else
+			self.maxspeed = 190;
 
+		if (self.sprinting) {
+
+#ifdef FTE
+
+			// viewbob when running 
+			self.punchangle_y = 0.6*sin(time*10);
+
+#endif // FTE
+
+			//playrun1();
+			self.maxspeed *= 1.5; // down from 1.66x, to match WaW
+		} else if (!self.sprinting && !self.zoom) {
+
+#ifdef FTE
+				
+			if (checkMovement(-1))
+				self.punchangle_x = 0.25*sin(time*15);	
+
+#endif // FTE
+
+		} else if (self.zoom != 3) {
+			self.maxspeed *= 0.5;
+		} 
+
+		// Speed Penalty
+		if (self.speed_penalty_time > time)
+		{
+			self.maxspeed *= self.speed_penalty;
+		} else {
+			self.speed_penalty = 1;
+		}
+		
+		switch(self.stance) {
+			case 1:
+				self.maxspeed *= 0.65;
+				break;
+			case 0:
+				self.maxspeed *= 0.25;
+				break;		
+		}
+
+#ifdef FTE
+
+		if (checkMovement(backward)) {
+			self.maxspeed *= 0.7;
+		} else if (checkMovement(left) || checkMovement(right)) {
+			self.maxspeed *= 0.8;
+		}
+
+#endif // FTE
+
+		if (!self.isBuying)
+			self.maxspeed *= GetWeaponWalkSpeed(self.perks, self.weapon);
+	}
+	if(self.isspec != 0 && !self.downed)
+	{
+		if(self.button0 && self.fire_delay < time)
+		{
+			self.aiment = find(self.aiment, classname, "player");
+			if(self.aiment != world)
+			{
+				sprint(self, PRINT_HIGH, "Now spectating ");
+				sprint(self, PRINT_HIGH, self.aiment.netname);
+				sprint(self, PRINT_HIGH, "\n");
+				
+				self.solid = SOLID_NOT;
+				self.movetype = MOVETYPE_NONE;
+			}
+			else
+			{
+				sprint(self, PRINT_HIGH, "Freefly spectate\n");
+				self.movetype = MOVETYPE_FLY;
+			}
+			self.fire_delay = time + 0.25;
+		}
+		if(self.aiment != world)
+		{
+			self.origin = self.aiment.origin;
+			self.angles = self.aiment.v_angle;
+			self.velocity = self.aiment.velocity;
+			self.fixangle = TRUE;
+		}
+		return;
+	}
+/*	
+	if (cvar("waypoint_mode")) {
+		Waypoint_Logic();
+	} else {
+		WeaponCore_ClientLogic();
+	}
+
+	JumpCheck(0);
+
+	// Fire effect
+	if (self.onfire) {
+		Effect_Fire(self.origin);
+
+		if (self.fire_timeout < time)
+			self.onfire = false;
+	}
+
+	// Flamethrower-based weapon cooldown/refuel process.
+	if (self.ltime < time) {
+		float weapon_slot = Weapon_PlayerHasWeaponWithFiretype(self, FIRETYPE_FLAME);
+
+		if (weapon_slot == 0)
+			return;
+
+		weapon_slot--;
+		if (self.weapons[weapon_slot].weapon_magazine == 0 && !self.cooldown) {
+			self.cooldown = true;
+		}
+
+		if (self.cooldown && self.weapons[weapon_slot].weapon_magazine > 20)
+			self.cooldown = false;
+		
+		if (self.weapons[weapon_slot].weapon_magazine < getWeaponMag(self.weapons[weapon_slot].weapon_id)) {
+			self.weapons[weapon_slot].weapon_magazine += 1;
+		}
+
+		self.ltime = time + 0.1;
+	}
+*/
 };
 
-
-void() PlayerPostThink = 
+float player_trace_time;
+void() PlayerPostThink =
 {
 
+#ifdef FTE
+
+	// Network everything
+	self.SendFlags = 1;
+	
+	// Obtain menu state from CSQC via infokeys.
+	self.is_in_menu = stof(infokey(self, "in_menu"));
+	if (self.is_in_menu != 1)
+		if (infokey(self, "chat") == "1")
+			self.is_in_menu = 2;
 	
 
-};
+#endif // FTE
 
-void() ClientKill = 
-{
+	if(self.isspec)
+		return;
+
+	//landsound
+	if((self.oldvelocity_z < -212) && (self.flags & FL_ONGROUND))
+	{
+		sound(self, CHAN_BODY, "sounds/player/land.wav", 0.6, 1.75);
+		self.lastsound_time = time - 0.15;
+	}
+
+	// Walking Animations
+	if (self.tp_anim_time < time && self.reload_delay < time && self.reload_delay2 < time 
+	&& self.fire_delay < time && self.fire_delay2 < time && self.knife_delay < time) {
+		if (vlen(self.velocity) > 20) {
+			if (self.sprinting) {
+				PAnim_Sprint();
+				self.tp_anim_type = PLAYER_ANIM_SPRINT;
+			} else {
+				self.tp_anim_type = PLAYER_ANIM_WALK;
+				switch(self.stance) {
+					case 2: PAnim_Walk(); break;
+					case 1: PAnim_CrouchWalk(); break;
+					case 0: PAnim_ProneWalk(); break;
+				}
+			}
+		} else {
+			// Stand still so Crouch Walk isn't stuck in place
+			switch(self.stance) {
+				case 2: self.frame = 0; break;
+				case 1: self.frame = 115; break;
+				case 0: self.frame = 162; break;
+			}
+
+			// If we're downed force set the last stand idle frame as well
+			// so the player doesn't look like they're just prone.
+			if (self.downed)
+				self.frame = 37;
+		}
+	}
 	
+#ifdef FTE
+
+	//footsteps
+	if((vlen(self.velocity) > 20) &&(( time - self.lastsound_time > 0.4) || (time - self.lastsound_time > 0.3 && self.sprinting)) && (self.flags & FL_ONGROUND))
+	{
+		float movelen = vlen(input_movevalues);
+		if(movelen > 300)
+		{		
+			local float ran = random();
+			if(ran > 0.8)
+				sound(self, CHAN_BODY, "sounds/player/footstep1.wav", 0.6, 2.5);
+			else if(ran > 0.6)
+				sound(self, CHAN_BODY, "sounds/player/footstep2.wav", 0.6, 2.5);
+			else if(ran > 0.4)
+				sound(self, CHAN_BODY, "sounds/player/footstep3.wav", 0.6, 2.5);
+			else if(ran > 0.2)
+				sound(self, CHAN_BODY, "sounds/player/footstep4.wav", 0.6, 2.5);
+			else
+				sound(self, CHAN_BODY, "sounds/player/footstep5.wav", 0.6, 2.5);
+			self.lastsound_time = time;
+		}
+	}
+
+#endif // FTE
+	
+	// Health Regeneration
+	if (self.health_delay < time && self.health != self.max_health && !self.downed)
+	{
+		// If we weren't super low on health, regen is instant.
+		if (self.health_was_very_low == true) {
+			self.health += 120 * frametime;
+		} else {
+			// Was 100% instant, but this delays it by only a few
+			// frames so the graphic doesn't just vanish when healed.
+			self.health += 300 * frametime;
+		}
+
+		// Make sure we mark that we weren't just super hurt anymore.
+		if (self.max_health <= self.health) {
+			self.health = self.max_health;
+			self.health_was_very_low = false;
+		}
+	}
+/*	
+	if (self.progress_bar) {
+		if (self.progress_bar < time) {
+			if (self.downed)
+				GetUp();
+			
+			if (self.reviving)
+				self.revived = 1;
+			
+			self.progress_bar = 0;
+			self.progress_bar_time = 0;
+			self.progress_bar_percent = 0;
+			
+				
+		} else {
+			float remaining = self.progress_bar - time;
+			self.progress_bar_percent = invertfloat((remaining / self.progress_bar_time));
+		}
+	}
+*/
+/*
+	if (self.sprinting) {
+		self.sprint_timer = self.sprint_duration + (time - self.sprint_start_time);
+		
+#ifndef FTE
+
+		if (!self.velocity || self.stance != 2) {
+			W_SprintStop();
+		}
+
+#else
+
+		if (!self.velocity || !checkMovement(0) || self.stance != 2) { //moto (FIXME) -- move me!
+			W_SprintStop();
+		}
+
+#endif // FTE
+		
+		if (self.perks & P_STAMIN) {
+			if (self.sprint_timer > sprint_max_time * 2) {
+				W_SprintStop();
+			}
+		}
+		else
+		{
+			if (self.sprint_timer > sprint_max_time) {
+				W_SprintStop();
+			}
+		}
+
+	} else if (self.sprint_duration > 0.0) 	{
+		self.sprint_rest_time = (time - self.sprint_stop_time);
+	}
+*/
+	self.oldvelocity = self.velocity;
+
+	// Perform a traceline to keep track of entities directly
+	// in front of the player.
+	// Also don't do it every frame because that's really tough
+	// on perf.
+	/*
+	if (player_trace_time < time) {
+		vector source;
+
+		makevectors (self.v_angle);
+		source = self.origin + self.view_ofs;
+
+#ifdef FTE
+
+		self.dimension_hit = HITBOX_DIM_LIMBS | HITBOX_DIM_ZOMBIES;
+
+#endif // FTE
+
+		traceline (source, source + v_forward*800*1.2, 0, self);
+
+#ifdef FTE
+
+		self.dimension_hit = HITBOX_DIM_ZOMBIES;
+
+#endif // FTE
+
+
+		// use .head here to avoid expanding ent struct
+		self.head = trace_ent;
+
+		// check whether we're looking at an entity separately to communicate
+		// with the client more reasonably
+		if (trace_ent.classname == "ai_zombie" || trace_ent.classname == "ai_zombie_head" 
+		|| trace_ent.classname == "ai_zombie_rarm" ||trace_ent.classname == "ai_zombie_larm" 
+		|| trace_ent.classname == "ai_dog")
+			self.facingenemy = true;
+		else
+			self.facingenemy = false;
+
+		// 1/4 of a second is enough of a delay to not kill the effect.
+		player_trace_time = time + 0.25;
+	}
+	*/
 };
 
+void() ClientKill = {};
 
-void() ClientConnect = 
-{
+//called when a client connects to the server
+void() ClientConnect =
+{	/*
 	if(cvar("developer") || player_count > 1) {
 		bprint(PRINT_HIGH, self.netname); //print player name
 		bprint(PRINT_HIGH, " connected.\n");
 	}
+*/	
 };
 
 //
@@ -563,12 +904,12 @@ void() PlayerSpawn =
 #else 
 
 	self.Weapon_Name = GetWeaponName(self.weapon);
-	self.Flash_Offset = GetWeaponFlash_Offset(self.weapon);
-	self.Flash_Size = GetWeaponFlash_Size(self.weapon);
+	//self.Flash_Offset = GetWeaponFlash_Offset(self.weapon);
+	//self.Flash_Size = GetWeaponFlash_Size(self.weapon);
 	self.ADS_Offset = GetWeaponADSOfs(self.weapon);
 
 #endif // FTE
-
+/*
 	if (G_STARTROUND != 1) {
 		rounds = G_STARTROUND - 1;
 	}
@@ -577,6 +918,7 @@ void() PlayerSpawn =
 	// to see their name.
 	if (time >= 5 && self.name != "")
 		nzp_setplayername(self, self.name);
+*/
 };
 
 void() SpectatorSpawn =
@@ -596,16 +938,17 @@ void() SpectatorSpawn =
 	self.view_ofs = '0 0 22';
 	self.aiment = world;
 };
+
 //called when a client loads a map
 float spawns_initialized;
-void() PutClientInServer = 
+void() PutClientInServer =
 {
 	// Init Spawn Points
 	if (!spawns_initialized) {
 		Spawns_Init();
 		spawns_initialized = true;
 	}
-	
+
 	if(cvar("developer") || player_count > 1) {
 		bprint(PRINT_HIGH, self.netname);
 		bprint(PRINT_HIGH, " has joined the game.\n");
@@ -638,7 +981,7 @@ void() ClientDisconnect =
 	self.nextthink = -1;
 	setmodel(self, "models/sprites/null.spr");
 
-	//GameRestart_ResetPerkaColas();
+	GameRestart_ResetPerkaColas();
 
 	if (self.downed) {
 		DisableReviveIcon(self.electro_targeted);
@@ -655,3 +998,19 @@ void() ClientDisconnect =
 };
 
 
+void() SetNewParms =
+{
+};
+
+void() SetChangeParms =
+{
+};
+
+#ifdef FTE
+
+void() SV_RunClientCommand =
+{
+	runstandardplayerphysics(self);
+}
+
+#endif // FTE

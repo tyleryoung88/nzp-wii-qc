@@ -29,22 +29,19 @@ string(float wep, float gorvmodel) GetWeaponModel;
 void() ReturnWeaponModel;
 
 void() flame_update = 
-{	/*
+{	
 	Effect_Fire(self.origin);
 
 	self.think = flame_update;
 	self.nextthink = time + random()+0.1;
-	*/
 }
 
 void() place_fire =
 {
-	/*
 	Effect_Fire(self.origin);
 
 	self.think = flame_update;
 	self.nextthink = time + random()+0.1;
-	*/
 };
 
 .float radioState;
@@ -256,7 +253,6 @@ void() misc_model_think =
 
 void() misc_model = 
 {
-	
     if (!self.mdl || self.mdl == "") {
 		// NZP: Check for .model instead
 		if (!self.model || self.model == "")
@@ -338,7 +334,6 @@ void() misc_model =
 
 	if (self.classname != "place_model")
 		misc_model_use();
-	
 };
 
 //
@@ -347,7 +342,6 @@ void() misc_model =
 //
 void() place_model =
 {  
-
 	self.classname = "place_model";
 	
 	// Grab an updated model path.
@@ -367,7 +361,6 @@ void() place_model =
 
 	// Now just execute the misc_model spawn function.
 	misc_model();
-
 };
 
 //

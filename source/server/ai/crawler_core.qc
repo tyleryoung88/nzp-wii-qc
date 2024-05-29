@@ -31,12 +31,11 @@ void() zombie_fastcrawl1;
 void() crawlerify1;
 
 void() Crawler_Walk_Setup
-{/*
+{
 	if (self.walktype == 1)
 		zombie_crawl1();
 	else
 		zombie_fastcrawl1();
-	*/
 }
 
 
@@ -53,7 +52,7 @@ void() crawler_footstep
 		sound(self, 5, "sounds/zombie/sc1.wav", 1, ATTN_NORM);
 	}
 }
-/*
+
 //14-28
 void()	zombie_crawl1		=[	0,		zombie_crawl2	] 	{Zombie_Walk((2.955*self.speed_penalty));SetZombieHitBox(CRAWLER_BBOX);self.frame = 14;Zombie_Think();};
 void()	zombie_crawl2		=[	1,		zombie_crawl3	] 	{Zombie_Walk((3.841*self.speed_penalty)); self.frame = 15;Zombie_Think();};
@@ -110,12 +109,12 @@ void() crawler_atk5		=[	4,		crawler_atk6] 	{self.frame = 33;Zombie_Think();};
 void() crawler_atk6		=[	5,		crawler_atk7] 	{self.frame = 34;Zombie_Think();};
 void() crawler_atk7		=[	6,		crawler_atk8] 	{self.frame = 35;Zombie_Think();};
 void() crawler_atk8		=[	7,		zombie_decide] 	{self.frame = 36;Zombie_Think();};
-*/
+
 //====================== Crawler Delay Attack ==============================
 //4-13
 
 void(float which) crawler_attack_choose =
-{/*
+{
 	self.angles_y = vectoyaw(self.enemy.origin - self.origin);
 	if(which != 1)
 	{
@@ -132,10 +131,9 @@ void(float which) crawler_attack_choose =
 	play_sound_z(1);
 	
 	crawler_atk1();
-	*/
 };
 
-/*
+
 void() crawler_da1		=[	0,		crawler_da2	] 	{SetZombieHitBox(CRAWLER_BBOX);crawler_attack_choose(0); self.frame = 4;Zombie_Think();};
 void() crawler_da2		=[	1,		crawler_da3	] 	{crawler_attack_choose(0); self.frame = 5;Zombie_Think();};
 void() crawler_da3		=[	2,		crawler_da4	] 	{crawler_attack_choose(0); self.frame = 6;Zombie_Think();};
@@ -251,7 +249,7 @@ void() crawler_rip_board21		=[	20,		crawler_rip_board22] 	{self.frame=123;Zombie
 void() crawler_rip_board22		=[	21,		crawler_rip_board23] 	{self.frame=124;Zombie_Think();};
 void() crawler_rip_board23		=[	22,		crawler_rip_board24] 	{self.frame=125;Zombie_Think();};
 void() crawler_rip_board24		=[	23,		zombie_decide] 	{self.frame=126;Zombie_Think();};
-*/
+
 void(entity who) makeCrawler =
 {         
 	if(who.state == 1)
@@ -260,7 +258,7 @@ void(entity who) makeCrawler =
 		return;
 	}
 	who.crawling = 2;//this means we haven't technically initiated it, but we're going to...
-	/*
+	
 	who.th_die = Zombie_Death;
 	who.th_walk = Crawler_Walk_Setup;
 	who.th_melee = zombie_attack;
@@ -270,7 +268,7 @@ void(entity who) makeCrawler =
 	
 	who.th_fall = crawler_fall1;
 	who.th_land = crawler_land1;
-	*/
+
 	float multiplier = random();
 	if (multiplier < 0.33) {
 		who.speed_penalty = 1;
