@@ -275,101 +275,85 @@ void    (entity who)                                                            
 void    (entity who, string name)                                                               nzp_setplayername   = #505;
 void    (entity who, float version)                                                             nzp_setdoubletapver = #506;
 void    (entity who, float color, float duration, float type)                                   nzp_screenflash     = #507;
-
 //
 // constants
 //
 
-#define	FALSE					 0
-#define TRUE					 1
+#define     FALSE                       0
+#define     TRUE                        1
 
 // edict.flags
-#define	FL_FLY					 1
-#define	FL_SWIM					 2
-#define	FL_CLIENT				 8	// set for all client edicts
-#define	FL_INWATER				 16	// for enter / leave water splash
-#define	FL_MONSTER				 32
-#define	FL_GODMODE				 64	// player cheat
-#define	FL_NOTARGET				 128	// player cheat
-#define	FL_ITEM					 256	// extra wide size for bonus items
-#define	FL_ONGROUND				 512	// standing on something
-#define	FL_PARTIALGROUND		 1024	// not all corners are valid
-#define	FL_WATERJUMP			 2048	// player jumping out of water
-//#define	FL_JUMPRELEASED			 4096;	// for jump debouncing
+#define	    FL_FLY                      1
+#define	    FL_SWIM					    2
+#define	    FL_CLIENT                   8               // set for all client edicts
+#define	    FL_INWATER                  16              // for enter / leave water splash
+#define	    FL_MONSTER                  32
+#define	    FL_GODMODE                  64              // player cheat
+#define	    FL_NOTARGET                 128             // player cheat
+#define	    FL_ITEM                     256             // extra wide size for bonus items
+#define	    FL_ONGROUND                 512             // standing on something
+#define	    FL_PARTIALGROUND            1024            // not all corners are valid
+#define	    FL_WATERJUMP                2048            // player jumping out of water
 
 // edict.movetype values
-#define	MOVETYPE_NONE			0	// never moves
-#define   MOVETYPE_ANGLENOCLIP     1
-#define   MOVETYPE_ANGLECLIP               2
-#define	MOVETYPE_WALK			 3	// players only
-#define	MOVETYPE_STEP			 4	// discrete, not real time unless fall
-#define	MOVETYPE_FLY			 5
-#define	MOVETYPE_TOSS			 6	// gravity
-#define	MOVETYPE_PUSH			 7	// no clip to world, push and crush
-#define	MOVETYPE_NOCLIP			 8
-#define	MOVETYPE_FLYMISSILE		 9	// fly with extra size against monsters
-#define	MOVETYPE_BOUNCE			 10
-#define	MOVETYPE_BOUNCEMISSILE	 11	// bounce with extra size
+#define		MOVETYPE_NONE				0               // never moves
+#define   	MOVETYPE_ANGLENOCLIP    	1
+#define   	MOVETYPE_ANGLECLIP        	2
+#define		MOVETYPE_WALK				3               // players only
+#define		MOVETYPE_STEP				4               // discrete, not real time unless fall
+#define		MOVETYPE_FLY				5
+#define		MOVETYPE_TOSS				6               // gravity
+#define		MOVETYPE_PUSH				7               // no clip to world, push and crush
+#define		MOVETYPE_NOCLIP				8
+#define		MOVETYPE_FLYMISSILE			9               // fly with extra size against monsters
+#define		MOVETYPE_BOUNCE				10
+#define		MOVETYPE_BOUNCEMISSILE		11              // bounce with extra size
 #define		MOVETYPE_FOLLOW				12
 
 #define 	MOVE_HITMODEL               0
 
 // edict.solid values
-#define		SOLID_NOT				 0	// no interaction with other objects
-#define		SOLID_TRIGGER			 1	// touch on edge, but not blocking
-#define		SOLID_BBOX				 2	// touch on edge, block
-#define		SOLID_SLIDEBOX			 3	// touch on edge, but not an onground
-#define		SOLID_BSP				 4	// bsp clip, touch on edge, block
-#define     SOLID_CORPSE             5               // bsp clip, touch on edge, block
+#define     SOLID_NOT                   0               // no interaction with other objects
+#define     SOLID_TRIGGER               1               // touch on edge, but not blocking
+#define     SOLID_BBOX                  2               // touch on edge, block
+#define     SOLID_SLIDEBOX              3               // touch on edge, but not an onground
+#define     SOLID_BSP                   4               // bsp clip, touch on edge, block
+#define     SOLID_CORPSE                5               // bsp clip, touch on edge, block
 
 // range values
-#define	RANGE_MELEE				 0
-#define	RANGE_NEAR				 1
-#define	RANGE_MID				 2
-#define	RANGE_FAR				 3
+#define     RANGE_MELEE                 0
+#define     RANGE_NEAR                  1
+#define     RANGE_MID                   2
+#define     RANGE_FAR                   3
 
 // deadflag values
-
-#define	DEAD_NO					 0
-#define	DEAD_DYING				 1
-#define	DEAD_DEAD				 2
-#define	DEAD_RESPAWNABLE		 3
+#define     DEAD_NO                     0
+#define     DEAD_DYING                  1
+#define     DEAD_DEAD                   2
+#define     DEAD_RESPAWNABLE            3
 
 // takedamage values
-
-#define	DAMAGE_NO				 0
-#define	DAMAGE_YES				 1
-#define	DAMAGE_AIM				 2
-
-.void()		th_stand;
-.void()		th_walk;
-.void()		th_run;
-.void(entity attacker, float damage)		th_pain;
-.void()		th_die;
-.void()         th_missile;
-.void()         th_melee;
+#define     DAMAGE_NO                   0
+#define     DAMAGE_YES                  1
+#define     DAMAGE_AIM                  2
+#define     DAMAGE_NOMARKER             3
 
 // point content values
+#define     CONTENT_EMPTY               -1
+#define     CONTENT_SOLID               -2
+#define     CONTENT_WATER               -3
+#define     CONTENT_SLIME               -4
+#define     CONTENT_LAVA                -5
+#define     CONTENT_SKY                 -6
 
-#define	CONTENT_EMPTY			 -1
-#define	CONTENT_SOLID			 -2
-#define	CONTENT_WATER			 -3
-#define	CONTENT_SLIME			 -4
-#define	CONTENT_LAVA			 -5
-#define   CONTENT_SKY                      -6
+//doors
+#define		STATE_TOP					0
+#define		STATE_BOTTOM				1
+#define		STATE_UP					2
+#define		STATE_DOWN					3
 
-#define   STATE_RAISED             0
-#define   STATE_LOWERED            1
-//#define	STATE_UP		 2;
-//#define	STATE_DOWN		 3;
-/*
-#define	VEC_ORIGIN  '0 0 0';
-#define	VEC_HULL_MIN  '-16 -16 -24';
-#define	VEC_HULL_MAX  '16 16 32';
+#define     VEC_ORIGIN                  '0 0 0'
 
-#define	VEC_HULL2_MIN  '-32 -32 -24';
-#define	VEC_HULL2_MAX  '32 32 64';
-*/
 // protocol bytes
 #define     SVC_BAD                     0
 #define     SVC_NOP                     1
@@ -410,41 +394,42 @@ void    (entity who, float color, float duration, float type)                   
 #define 	SVC_BSPDECAL    			50				// naievil -- keep me
 #define 	SVC_ACHIEVEMENT 			52
 
-#define	TE_SPIKE		 0
-#define	TE_SUPERSPIKE	 1
-#define	TE_GUNSHOT		 2
-#define	TE_EXPLOSION	 3
-#define	TE_TAREXPLOSION	 4
-#define	TE_LIGHTNING1	 5
-#define	TE_LIGHTNING2	 6
-#define	TE_WIZSPIKE		 7
-#define	TE_KNIGHTSPIKE	 8
-#define	TE_LIGHTNING3	 9
-#define	TE_LAVASPLASH	 10
-#define	TE_TELEPORT		 11
-#define TE_RAYSPLASHGREEN 14
-#define TE_RAYSPLASHRED 15
+#define     TE_SPIKE                    0
+#define     TE_SUPERSPIKE               1
+#define     TE_GUNSHOT                  2
+#define     TE_EXPLOSION                3
+#define     TE_TAREXPLOSION             4
+#define     TE_LIGHTNING1               5
+#define     TE_LIGHTNING2               6
+#define     TE_WIZSPIKE                 7
+#define     TE_KNIGHTSPIKE              8
+#define     TE_LIGHTNING3               9
+#define     TE_LAVASPLASH               10
+#define     TE_TELEPORT                 11
+#define     TE_RAYSPLASHGREEN           14
+#define     TE_RAYSPLASHRED             15
 
 // sound channels
 // channel 0 never willingly overrides
 // other channels (1-7) allways override a playing sound on that channel
-#define	CHAN_AUTO		 0
-#define	CHAN_WEAPON		 1
-#define	CHAN_VOICE		 2
-#define	CHAN_ITEM		 3
-#define	CHAN_BODY		 4
+// Player uses channel 5 for all weapon reload sfx
+#define     CHAN_AUTO                   0
+#define     CHAN_WEAPON                 1
+#define     CHAN_VOICE                  2
+#define     CHAN_ITEM                   3
+#define     CHAN_BODY                   4
+#define 	CHAN_NO_PHS_ADD				8				// ie: CHAN_BODY+CHAN_NO_PHS_ADD
 
-#define	ATTN_NONE		 0
-#define	ATTN_NORM		 1
-#define	ATTN_IDLE		 2
-#define	ATTN_STATIC		 3
+#define     ATTN_NONE                   0
+#define     ATTN_NORM                   1
+#define     ATTN_IDLE                   2
+#define     ATTN_STATIC                 3
 
 // update types
-
-#define	UPDATE_GENERAL	 0
-#define	UPDATE_STATIC	 1
-#define	UPDATE_BINARY	 2
-#define	UPDATE_TEMP		 3
+#define     UPDATE_GENERAL              0
+#define     UPDATE_STATIC               1
+#define     UPDATE_BINARY               2
+#define     UPDATE_TEMP                 3
 
 // entity effects
 #define	EF_BLUELIGHT			        1
@@ -464,10 +449,11 @@ void    (entity who, float color, float duration, float type)                   
 #define EF_RAYGREEN  			        16384			// green trail for ray gun
 
 // messages
-#define	MSG_BROADCAST	 0		// unreliable to all
-#define	MSG_ONE			 1		// reliable to one (msg_entity)
-#define	MSG_ALL			 2		// reliable to all
-#define	MSG_INIT		 3	// write to the init string
+#define     MSG_BROADCAST               0               // unreliable to all
+#define     MSG_ONE                     1               // reliable to one (msg_entity)
+#define     MSG_ALL                     2               // reliable to all
+#define     MSG_INIT                    3               // write to the init string
+#define		MSG_MULTICASE				4				// for multicast() call
 
 // message levels
 #define     PRINT_LOW					0				// pickup messages
@@ -475,29 +461,20 @@ void    (entity who, float color, float duration, float type)                   
 #define     PRINT_HIGH					2				// critical messages
 #define     PRINT_CHAT					3				// also goes to chat console
 
-#define	AS_STRAIGHT		 1
-#define	AS_SLIDING		 2
-#define	AS_MELEE		 3
-#define	AS_MISSILE		 4
+#define     AS_STRAIGHT                 1
+#define     AS_SLIDING                  2
+#define     AS_MELEE                    3
+#define     AS_MISSILE                  4
 
-// Quake assumes these are defined.
-entity activator;
-string string_null;    // null string, nothing should be held here
-
-.string         wad, map;
-.float worldtype, delay, wait, lip, light_lev, speed, style, skill;
-.string killtarget;
-.vector pos1, pos2, mangle;
-
-//void(vector o, vector d, float color, float count) particle = #48;// start a particle effect
-//void(string s) bprint				= #23;
-//void(entity client, string s) sprint		= #24;
-//void() SUB_Remove = {remove(self);};
-
-float(entity targ, entity inflictor) CanDamage;
+// multicast sets
+#define		MULTICAST_ALL				0				// every client
+#define		MULTICAST_PHS				1				// within hearing
+#define		MULTICAST_PVS				2				// within sight
+#define		MULTICAST_ALL_R				3				// every client, reliable
+#define		MULTICAST_PHS_R				4				// within hearing, reliable
+#define		MULTICAST_PVS_R				5				// within sight, reliable
 
 // file operations
 #define		FILE_READ 	 				0
 #define		FILE_APPEND 				1
 #define		FILE_WRITE 					2
-

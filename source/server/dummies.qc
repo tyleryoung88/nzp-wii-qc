@@ -122,3 +122,4 @@ void(entity who) makeCrawler = {return;};
 void() spawnAllZombEnts = {return;};
 void() set_z_health = {return;};
 float() spawn_a_dogA = {return 0;};
+void () Waypoint_Logic = {return;};

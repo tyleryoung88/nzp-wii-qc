@@ -496,7 +496,7 @@ void() PlayerPreThink =
 		}
 		return;
 	}
-/*	
+	
 	if (cvar("waypoint_mode")) {
 		Waypoint_Logic();
 	} else {
@@ -534,7 +534,6 @@ void() PlayerPreThink =
 
 		self.ltime = time + 0.1;
 	}
-*/
 };
 
 float player_trace_time;
@@ -638,7 +637,7 @@ void() PlayerPostThink =
 			self.health_was_very_low = false;
 		}
 	}
-/*	
+	
 	if (self.progress_bar) {
 		if (self.progress_bar < time) {
 			if (self.downed)
@@ -657,8 +656,7 @@ void() PlayerPostThink =
 			self.progress_bar_percent = invertfloat((remaining / self.progress_bar_time));
 		}
 	}
-*/
-/*
+
 	if (self.sprinting) {
 		self.sprint_timer = self.sprint_duration + (time - self.sprint_start_time);
 		
@@ -691,14 +689,13 @@ void() PlayerPostThink =
 	} else if (self.sprint_duration > 0.0) 	{
 		self.sprint_rest_time = (time - self.sprint_stop_time);
 	}
-*/
+
 	self.oldvelocity = self.velocity;
 
 	// Perform a traceline to keep track of entities directly
 	// in front of the player.
 	// Also don't do it every frame because that's really tough
 	// on perf.
-	/*
 	if (player_trace_time < time) {
 		vector source;
 
@@ -735,19 +732,17 @@ void() PlayerPostThink =
 		// 1/4 of a second is enough of a delay to not kill the effect.
 		player_trace_time = time + 0.25;
 	}
-	*/
 };
 
 void() ClientKill = {};
 
 //called when a client connects to the server
 void() ClientConnect =
-{	/*
+{	
 	if(cvar("developer") || player_count > 1) {
 		bprint(PRINT_HIGH, self.netname); //print player name
 		bprint(PRINT_HIGH, " connected.\n");
-	}
-*/	
+	}	
 };
 
 //
@@ -904,12 +899,12 @@ void() PlayerSpawn =
 #else 
 
 	self.Weapon_Name = GetWeaponName(self.weapon);
-	//self.Flash_Offset = GetWeaponFlash_Offset(self.weapon);
-	//self.Flash_Size = GetWeaponFlash_Size(self.weapon);
+	self.Flash_Offset = GetWeaponFlash_Offset(self.weapon);
+	self.Flash_Size = GetWeaponFlash_Size(self.weapon);
 	self.ADS_Offset = GetWeaponADSOfs(self.weapon);
 
 #endif // FTE
-/*
+
 	if (G_STARTROUND != 1) {
 		rounds = G_STARTROUND - 1;
 	}
@@ -918,7 +913,6 @@ void() PlayerSpawn =
 	// to see their name.
 	if (time >= 5 && self.name != "")
 		nzp_setplayername(self, self.name);
-*/
 };
 
 void() SpectatorSpawn =
@@ -964,7 +958,7 @@ void() PutClientInServer =
 
 #endif // FTE
 
-	//GameRestart_ResetPerkaColas();
+	GameRestart_ResetPerkaColas();
 };
 
 //called when client disconnects from the server

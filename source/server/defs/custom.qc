@@ -280,8 +280,6 @@ vector	trace_plane_normal;
 // AI definitions
 // Used for global one-zombie-at-a-time type ai
 //
-
-
 void Do_Zombie_AI();
 void Z_ElectroShock();
 
@@ -523,7 +521,7 @@ float rounds;
 float rounds_change;
 
 //Waypoints
-//void () Waypoint_Logic;
+void () Waypoint_Logic;
 entity current_way;
 float waypoint_mode;
 entity active_way;
@@ -535,7 +533,7 @@ entity active_way;
 
 //pathfinds
 #define MAX_WAYPOINTS 256 //max waypoints
-//void LoadWaypointData();
+void LoadWaypointData();
 typedef struct
 {
 	vector org;

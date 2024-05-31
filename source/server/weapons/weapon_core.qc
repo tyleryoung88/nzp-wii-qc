@@ -1606,8 +1606,8 @@ void () Impulse_Functions =
 				Change_Stance();
 			break;
 		case 100:
-			//cvar_set("waypoint_mode", "1");
-			//localcmd("restart\n");
+			cvar_set("waypoint_mode", "1");
+			localcmd("restart\n");
 			break;
 		default:
 

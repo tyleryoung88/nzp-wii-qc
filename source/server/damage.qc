@@ -32,13 +32,13 @@ void() teddy_react;
 
 void() EndGame_Restart = 
 {
-	//localcmd("restart");
+	localcmd("restart");
 }
 
 // Fade to black function, creates another think for restart
 void() EndGame_FadePrompt =
 {
-	//nzp_screenflash(self, SCREENFLASH_COLOR_BLACK, 6, SCREENFLASH_FADE_IN);
+	nzp_screenflash(self, SCREENFLASH_COLOR_BLACK, 6, SCREENFLASH_FADE_IN);
 
 #ifdef FTE
 
@@ -182,7 +182,7 @@ void() GetDown =
 	self.weapons[0].weapon_magazine_left == 0 && self.weapons[0].weapon_reserve == 0 && 
 	self.weapons[1].weapon_magazine == 0 && self.weapons[1].weapon_magazine_left == 0 && 
 	self.weapons[1].weapon_reserve == 0) {
-		//GiveAchievement(9, self);
+		GiveAchievement(9, self);
 	}
 
 	// Aim out to reset zoom values
@@ -468,7 +468,7 @@ void(entity victim,entity attacker, float damage, float d_style) DamageHandler =
 		if (d_style == S_EXPLOSIVE && damage != 0) {
 			if (victim.health > 0 && victim.crawling == 2) {
 				makeCrawler(victim);
-				//GiveAchievement(3, attacker);
+				GiveAchievement(3, attacker);
 			}
 				
 			if (victim.health <= 0)
@@ -709,7 +709,7 @@ void(entity inflictor, entity attacker, float damage2, float mindamage, float ra
 
 				if (ach_tracker_barr >= 15) 
 				{
-					//GiveAchievement(13);
+					GiveAchievement(13);
 				}
 			}
 

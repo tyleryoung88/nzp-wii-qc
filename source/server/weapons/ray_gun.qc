@@ -37,7 +37,6 @@
 //
 void(float direct_impact) Ray_BeamExplode =
 {
-	/*
 	float raybeam_damage_min;
 	float raybeam_damage_max;
 	float raybeam_damage_radius = 64;
@@ -85,10 +84,9 @@ void(float direct_impact) Ray_BeamExplode =
 	WriteCoord (MSG_BROADCAST, self.origin_z);
 
 #endif // FTE
-	*/
+
 	// Cleanup
 	SUB_Remove ();
-	
 };
 
 //

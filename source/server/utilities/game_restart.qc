@@ -371,5 +371,5 @@ void() Soft_Restart = {
 	self.isspec = false;
 	PutClientInServer();
 
-	//nzp_screenflash(world, SCREENFLASH_COLOR_BLACK, 1, SCREENFLASH_FADE_OUT);
+	nzp_screenflash(world, SCREENFLASH_COLOR_BLACK, 1, SCREENFLASH_FADE_OUT);
 }

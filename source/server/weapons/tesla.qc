@@ -130,7 +130,6 @@ vector(entity ent) tesla_arc_ofs_for_ent = {
 
 // entity cur_ent, entity prev_ent, entity player
 void() tesla_arc = {
-	/*
     if(self.tesla_next_arc_time < 0) {
         return;
     }
@@ -219,7 +218,6 @@ void() tesla_arc = {
     // }
     // Have self immediately arc again next frame
     self.tesla_next_arc_time = 0;
-	*/
 }
 
 
@@ -227,7 +225,6 @@ void() tesla_arc = {
 // Fire lightning out of the gun
 void() W_FireTesla =
 {
-	/*
     vector source;
     entity tempe = spawn();
 
@@ -355,5 +352,4 @@ void() W_FireTesla =
             tesla_damage(best_ent, world, self, 1, true); 
         }
     }
-	*/
 }
