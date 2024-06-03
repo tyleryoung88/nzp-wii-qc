@@ -106,10 +106,11 @@ void() tigger_mainframe = {remove(self);}; //lol this typo is in their old fgd t
 void() trigger_teleport_area = {remove(self);};
 
 //Temp defs for merge
-float spawn_a_zombieA() = {return 0;};
+//float spawn_a_zombieA() = {return 0;};
 void MBOX_FreeEnt(entity ent) = {return;};
 entity MBOX_GetFreeEnt() = {return;};
 void MBOX_Touch() = {return;};
+/*
 float push_away_zombies() = {return 0;};
 float Zombie_HeadCanGib(entity who, float weapon) = {return 0;};
 void zombie_crawl1() = {return;};
@@ -123,3 +124,4 @@ void() spawnAllZombEnts = {return;};
 void() set_z_health = {return;};
 float() spawn_a_dogA = {return 0;};
 void () Waypoint_Logic = {return;};
+*/

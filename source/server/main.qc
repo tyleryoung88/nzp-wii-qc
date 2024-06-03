@@ -62,8 +62,8 @@ void(string ent_name) Way_SetBrushEntNonSolid =
 float zombie_cleaned_w;
 void() StartFrame =
 {
-	//framecount = framecount + 1;
-/*
+	framecount = framecount + 1;
+
 	if (waypoint_mode) {
 		if (!zombie_cleaned_w) {
 			entity zent;
@@ -90,7 +90,7 @@ void() StartFrame =
 		}
 		return;
 	}
-*/
+
 	// Start completely blacked out
 	//if (time < 5)
 		
@@ -100,7 +100,7 @@ void() StartFrame =
 		Round_Core();
 
 		if (ai_delay_time < time) {
-			//Do_Zombie_AI ();
+			Do_Zombie_AI ();
 
 			// This determines the delay between each AI's update sequence.
 			// It needs to be variable -- the more AI, the smaller this number
@@ -383,7 +383,7 @@ void() worldspawn =
 	mappath = strcat("maps/", mapname);
 	mappath = strzone(mappath);
 
-	//LoadWaypointData();
+	LoadWaypointData();
 
 	//set game elements
 	G_STARTPOINTS = 500;
@@ -399,8 +399,8 @@ void() worldspawn =
 
 void() SpectatorConnect =
 {
-	//bprint(PRINT_HIGH, self.netname);
-	//bprint(PRINT_HIGH, " has joined the spectators.\n");
+	bprint(PRINT_HIGH, self.netname);
+	bprint(PRINT_HIGH, " has joined the spectators.\n");
 }
 
 void() RelinkZombies =
@@ -559,7 +559,7 @@ void() LinkZombiesHitbox =
 
 void() EndFrame =
 {
-	//RelinkZombies();
+	RelinkZombies();
 
 	if (cheats_have_been_activated == false && cvar("sv_cheats") == 1) {
 		cheats_have_been_activated = true;
