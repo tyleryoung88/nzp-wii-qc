@@ -26,7 +26,6 @@
 */
 
 // Triggers
-void() trigger_relay            = {remove(self);};
 void() trigger_changelevel      = {remove(self);};
 void() trigger_counter          = {remove(self);};
 void() trigger_secret           = {remove(self);};
@@ -104,24 +103,3 @@ void LoadWaypointData() = {};
 void() trigger_teleport = {remove(self);};
 void() tigger_mainframe = {remove(self);}; //lol this typo is in their old fgd too, apparently.
 void() trigger_teleport_area = {remove(self);};
-
-//Temp defs for merge
-//float spawn_a_zombieA() = {return 0;};
-void MBOX_FreeEnt(entity ent) = {return;};
-entity MBOX_GetFreeEnt() = {return;};
-void MBOX_Touch() = {return;};
-/*
-float push_away_zombies() = {return 0;};
-float Zombie_HeadCanGib(entity who, float weapon) = {return 0;};
-void zombie_crawl1() = {return;};
-void zombie_fastcrawl1() = {return;};
-void crawlerify1() = {return;};
-void Zombie_ReassignSpawnIDs() = {return;};
-void() Do_Zombie_AI = {return;};
-void() Z_ElectroShock = {return;};
-void(entity who) makeCrawler = {return;};
-void() spawnAllZombEnts = {return;};
-void() set_z_health = {return;};
-float() spawn_a_dogA = {return 0;};
-void () Waypoint_Logic = {return;};
-*/

@@ -136,7 +136,6 @@ void()  light_spot = 			// Spotlight
 //
 void(entity e, optional float fullbright) Light_Red =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -155,7 +154,7 @@ void(entity e, optional float fullbright) Light_Red =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
@@ -164,7 +163,6 @@ void(entity e, optional float fullbright) Light_Red =
 //
 void(entity e, optional float fullbright) Light_Green =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -183,7 +181,7 @@ void(entity e, optional float fullbright) Light_Green =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
@@ -192,7 +190,6 @@ void(entity e, optional float fullbright) Light_Green =
 //
 void(entity e, optional float fullbright) Light_Blue =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -211,7 +208,7 @@ void(entity e, optional float fullbright) Light_Blue =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
@@ -220,7 +217,6 @@ void(entity e, optional float fullbright) Light_Blue =
 //
 void(entity e, optional float fullbright) Light_Orange =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -239,7 +235,7 @@ void(entity e, optional float fullbright) Light_Orange =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
@@ -248,7 +244,6 @@ void(entity e, optional float fullbright) Light_Orange =
 //
 void(entity e, optional float fullbright) Light_Purple =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -267,7 +262,7 @@ void(entity e, optional float fullbright) Light_Purple =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
@@ -276,7 +271,6 @@ void(entity e, optional float fullbright) Light_Purple =
 //
 void(entity e, optional float fullbright) Light_Cyan =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -295,7 +289,7 @@ void(entity e, optional float fullbright) Light_Cyan =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
@@ -304,7 +298,6 @@ void(entity e, optional float fullbright) Light_Cyan =
 //
 void(entity e, optional float fullbright) Light_Pink =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -323,7 +316,7 @@ void(entity e, optional float fullbright) Light_Pink =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
@@ -332,7 +325,6 @@ void(entity e, optional float fullbright) Light_Pink =
 //
 void(entity e, optional float fullbright) Light_Lime =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -351,7 +343,7 @@ void(entity e, optional float fullbright) Light_Lime =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
@@ -360,7 +352,6 @@ void(entity e, optional float fullbright) Light_Lime =
 //
 void(entity e, optional float fullbright) Light_Yellow =
 {
-	/*
     if (fullbright)
         e.effects = EF_FULLBRIGHT;
 
@@ -379,7 +370,7 @@ void(entity e, optional float fullbright) Light_Yellow =
     }
 
 #endif // FTE
-	*/
+
 }
 
 //
